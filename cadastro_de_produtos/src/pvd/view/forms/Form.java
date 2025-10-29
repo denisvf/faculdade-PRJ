@@ -4,23 +4,84 @@
  */
 package pvd.view.forms;
 
+import pvd.view.helpers.WindowHelper;
+import pvd.view.lists.List;
+
 /**
  *
  * @author denis
  */
 public abstract class Form extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Form.class.getName());
 
     /**
      * Creates new form Form
      */
-    public Form() {
+    private List parentList;
+    protected int itemToUpdateId;
+
+    public Form(List parentList) {
+        this.parentList = parentList;
         initComponents();
+        WindowHelper.centralize(this);
     }
-    
+
+    public Form(List parentList, int itemToUpdateId) {
+        this.parentList = parentList;
+        this.itemToUpdateId = itemToUpdateId;
+        initComponents();
+//        this.fillFields();
+    }
+
     abstract boolean create();
-    
+
+    abstract boolean update();
+
+    abstract void fillFields();
+
+    private void saveCreate() {
+        boolean created = this.create();
+        if (created) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Registro criado com sucesso",
+                    "Success",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+            parentList.refreshTable();
+            this.dispose();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Falha ao criar o registro, por favor verifique os valores de entrada",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    private void saveUpdate() {
+        boolean updated = this.update();
+        if (updated) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Registro atualizado com sucesso",
+                    "Success",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
+            parentList.refreshTable();
+            this.dispose();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Falha ao atualizar o registro, por favor verifique os valores de entrada",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -78,26 +139,17 @@ public abstract class Form extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-          this.dispose();
+        this.dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        boolean created = this.create();
-    if (created) {
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Registro criado com sucesso",
-            "Success",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE
-        );
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Falha ao criar o registro, por favor verifique os valores de entrada",
-            "Error",
-            javax.swing.JOptionPane.ERROR_MESSAGE
-        );
-    }
+        System.out.println("ID: " + this.itemToUpdateId);
+        System.out.println(this.itemToUpdateId == (int) this.itemToUpdateId);
+
+        if (this.itemToUpdateId > 0)
+            this.saveUpdate();
+        else
+            this.saveCreate();
     }//GEN-LAST:event_saveButtonActionPerformed
 
     /**

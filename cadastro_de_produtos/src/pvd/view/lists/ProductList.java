@@ -22,17 +22,31 @@ public class ProductList extends List {
     public ProductList() {
         super();
         initComponents();
+    }
+
+    public void refreshTable() {
         this.listData();
     }
 
     @Override
-    protected void openForm() {
-        new ProductForm().setVisible(true);
+    public boolean delete(int id) {
+        ProductController productController = new ProductController();
+        boolean deleted = productController.delete(id);
+        return deleted;
+    }
+    
+    @Override
+    protected void openCreateForm() {
+        new ProductForm(this).setVisible(true);
+    }
+    
+    @Override
+    protected void openUpdateForm(int itemToUpdateId) {
+        new ProductForm(this, itemToUpdateId).setVisible(true);
     }
 
     @Override
     protected String[] getColumns() {
-        // Define os títulos das colunas da tabela
         return new String[]{
             "ID",
             "Nome",
@@ -48,7 +62,6 @@ public class ProductList extends List {
         ProductController controller = new ProductController();
         java.util.List<Product> products = controller.getAll();
 
-        // Cria uma matriz [linhas][colunas]
         String[][] rows = new String[products.size()][getColumns().length];
 
         for (int i = 0; i < products.size(); i++) {

@@ -19,14 +19,59 @@ import java.sql.*;
  */
 public class ProductController extends Controller {
 
+    @Override
+    public Product getById(int id) {
+        String sql = "SELECT * FROM products WHERE _id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Product product = new Product();
+
+                product.setId(rs.getInt("_id"));
+                product.setName(rs.getString("name"));
+                product.setUnit(rs.getString("unit"));
+                product.setPrice(rs.getDouble("price"));
+                product.setStockQuantity(rs.getDouble("stock_quantity"));
+
+                Timestamp lastSaleDate = rs.getTimestamp("last_sale_date");
+                if (lastSaleDate != null) {
+                    product.setLastSaleDate(new java.util.Date(lastSaleDate.getTime()));
+                }
+                
+                return product;
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(
+                        null,
+                        "No record found with ID " + id,
+                        "Not Found",
+                        javax.swing.JOptionPane.WARNING_MESSAGE
+                );
+            }
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(getClass().getName())
+                    .severe("Error while fetching product: " + e.getMessage());
+
+            javax.swing.JOptionPane.showMessageDialog(
+                    null,
+                    "An unexpected error occurred while fetching the record.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+        return null;
+    }
+
     public List<Product> getAll() {
         List<Product> products = new ArrayList<>();
 
-        String sql = "SELECT _id, name, unit, price, stock_quantity, last_sale_date FROM products";
+        String sql = "SELECT * FROM products";
 
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConnectionFactory.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Product product = new Product();
@@ -46,10 +91,10 @@ public class ProductController extends Controller {
         } catch (SQLException e) {
             e.printStackTrace();
             javax.swing.JOptionPane.showMessageDialog(
-                null,
-                "Error while fetching products: " + e.getMessage(),
-                "Database Error",
-                javax.swing.JOptionPane.ERROR_MESSAGE
+                    null,
+                    "Error while fetching products: " + e.getMessage(),
+                    "Database Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
             );
         }
 
@@ -86,13 +131,56 @@ public class ProductController extends Controller {
     }
 
     @Override
-    public boolean update(Model model) {
-        return false;
+    public boolean delete(int id) {
+        String sql = "DELETE FROM products WHERE _id = ?";
+        try (java.sql.Connection conn = ConnectionFactory.getConnection(); java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (java.sql.SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public boolean delete() {
-        return false;
+    public boolean update(Model model) {
+        Product product = (Product) model;
+
+        String sql = "UPDATE products SET name=?, unit=?, price=?, stock_quantity=? WHERE _id=?";
+        
+        System.out.println(product.getId());
+        System.out.println(product.getName());
+        System.out.println(product.getUnit());
+        System.out.println(product.getPrice());
+        System.out.println(product.getStockQuantity());
+
+        try (Connection conn = ConnectionFactory.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getUnit());
+            stmt.setDouble(3, product.getPrice());
+            stmt.setDouble(4, product.getStockQuantity());
+            stmt.setInt(5, product.getId());
+            
+            System.out.println("TESTE");
+            int rows = stmt.executeUpdate();
+            
+            return rows > 0;
+
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(getClass().getName())
+                    .severe("Error while updating product: " + e.getMessage());
+
+            javax.swing.JOptionPane.showMessageDialog(
+                    null,
+                    "An unexpected error occurred while updating the record.",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+
+            return false;
+        }
     }
 
 }

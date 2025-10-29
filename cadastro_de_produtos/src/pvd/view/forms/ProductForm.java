@@ -4,8 +4,12 @@
  */
 package pvd.view.forms;
 
+import javax.swing.JOptionPane;
 import pvd.controller.ProductController;
 import pvd.model.Product;
+import pvd.view.helpers.WindowHelper;
+import pvd.view.lists.List;
+import pvd.view.lists.ProductList;
 
 /**
  *
@@ -18,28 +22,41 @@ public class ProductForm extends Form {
     /**
      * Creates new form ProductForm
      */
-    public ProductForm() {
+    public ProductForm(ProductList parentList) {
+        super(parentList);
         initComponents();
     }
+
+    public ProductForm(ProductList parentList, int productId) {
+        super(parentList, productId);
+        initComponents();
+        this.fillFields();
+        WindowHelper.centralize(this);
+    }
+
+    private Product buildProduct() {
+        Product product = new Product();
+
+        String name = getNameTextInput().getText().trim();
+        String unit = getUnitComboBoxInput().getSelectedItem().toString();
+        double price = Double.parseDouble(getPriceTextInput().getText().trim());
+        double stockQuantity = Double.parseDouble(getStockQuantityTextInput().getText().trim());
+
+        product.setName(name);
+        product.setUnit(unit);
+        product.setPrice(price);
+        product.setStockQuantity(stockQuantity);
+
+        // TODO: Define "lastSaleDateTime" when the sales table be doned
+        // product.setLastSaleDateTime(null);
+        return product;
+    }
+    
 
     @Override
     protected boolean create() {
         try {
-            Product product = new Product();
-
-            String name = getNameTextInput().getText().trim();
-            String unit = getUnitComboBoxInput().getSelectedItem().toString();
-            double price = Double.parseDouble(getPriceTextInput().getText().trim());
-            double stockQuantity = Double.parseDouble(getStockQuantityTextInput().getText().trim());
-
-            product.setName(name);
-            product.setUnit(unit);
-            product.setPrice(price);
-            product.setStockQuantity(stockQuantity);
-
-            // TODO: Define "lastSaleDateTime" when the sales table be doned
-//            product.setLastSaleDateTime(null);
-
+            Product product = this.buildProduct();
             ProductController productController = new ProductController();
             boolean created = productController.create(product);
 
@@ -56,6 +73,54 @@ public class ProductForm extends Form {
                     "An unexpected error occurred while creating the product: " + e.getMessage(),
                     "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             return false;
+        }
+    }
+
+    protected boolean update() {
+        try {
+            Product product = this.buildProduct();
+            product.setId(this.itemToUpdateId);
+            ProductController productController = new ProductController();
+            boolean updated = productController.update(product);
+
+            return updated;
+
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                    "Invalid numeric value. Please check price and stock quantity fields.",
+                    "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return false;
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                    "An unexpected error occurred while updating the product: " + e.getMessage(),
+                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    @Override
+    protected void fillFields() {
+        try {
+            ProductController controller = new ProductController();
+            Product product = controller.getById(this.itemToUpdateId);
+
+            if (product != null) {
+                getNameTextInput().setText(product.getName());
+                getPriceTextInput().setText(String.valueOf(product.getPrice()));
+                getStockQuantityTextInput().setText(String.valueOf(product.getStockQuantity()));
+                getUnitComboBoxInput().setSelectedItem(product.getUnit());
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "The selected product could not be found.",
+                        "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
+                this.dispose();
+            }
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Error while loading product data: " + e.getMessage(),
+                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -178,27 +243,6 @@ public class ProductForm extends Form {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new ProductForm().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

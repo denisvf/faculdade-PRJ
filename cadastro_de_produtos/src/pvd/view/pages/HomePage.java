@@ -4,6 +4,7 @@
  */
 package pvd.view.pages;
 
+import pvd.view.helpers.WindowHelper;
 import pvd.view.lists.ProductList;
 
 /**
@@ -19,6 +20,7 @@ public class HomePage extends javax.swing.JFrame {
      */
     public HomePage() {
         initComponents();
+        WindowHelper.centralize(this);
     }
 
     /**

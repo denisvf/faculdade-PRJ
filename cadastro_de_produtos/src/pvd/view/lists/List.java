@@ -6,6 +6,7 @@ package pvd.view.lists;
 
 import javax.swing.table.DefaultTableModel;
 import pvd.view.forms.ProductForm;
+import pvd.view.helpers.WindowHelper;
 
 /**
  *
@@ -20,11 +21,17 @@ public abstract class List extends javax.swing.JFrame {
      */
     public List() {
         initComponents();
+        this.listData();
+        WindowHelper.centralize(this);
     }
 
     protected abstract String[][] getRows();
 
     protected abstract String[] getColumns();
+
+    public void refreshTable() {
+        this.listData();
+    }
 
     protected void listData() {
         String[][] rows = getRows();
@@ -69,8 +76,18 @@ public abstract class List extends javax.swing.JFrame {
         });
 
         editButton.setText("Editar");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
 
         deleteButton.setText("Deletar");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -105,11 +122,107 @@ public abstract class List extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    protected abstract void openForm();
+    protected abstract void openCreateForm();
+
+    protected abstract void openUpdateForm(int itemToUpdateId);
+
+    protected abstract boolean delete(int id);
 
     private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
-        this.openForm();
+        this.openCreateForm();
     }//GEN-LAST:event_createButtonActionPerformed
+
+    private int getSelectedItemId() {
+        int selectedRow = table.getSelectedRow();
+        Object idValue = table.getValueAt(selectedRow, 0);
+        if (idValue == null) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "O item selecionado não possui ID válido.",
+                    "Erro",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return 0;
+        }
+
+        int id = Integer.parseInt(idValue.toString());
+        return id;
+    }
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        int id = this.getSelectedItemId();
+
+        if (id == 0) {
+            return;
+        }
+
+        if (id < 1) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Por favor, selecione um item para excluir.",
+                    "Nenhuma seleção",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "Tem certeza que deseja excluir o item com ID " + id + "?",
+                "Confirmar exclusão",
+                javax.swing.JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+                boolean deleted = this.delete(id);
+
+                if (deleted) {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Item excluído com sucesso.",
+                            "Sucesso",
+                            javax.swing.JOptionPane.INFORMATION_MESSAGE
+                    );
+                    this.refreshTable();
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(
+                            this,
+                            "Falha ao excluir o item.",
+                            "Erro",
+                            javax.swing.JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Erro ao excluir: " + e.getMessage(),
+                        "Erro",
+                        javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        int id = this.getSelectedItemId();
+
+        if (id == 0) {
+            return;
+        }
+
+        if (id < 1) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Por favor, selecione um item para editar.",
+                    "Nenhuma seleção",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+        
+        this.openUpdateForm(id);
+    }//GEN-LAST:event_editButtonActionPerformed
 
     /**
      * @param args the command line arguments

@@ -4,6 +4,8 @@
  */
 package pvd.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import pvd.model.Model;
 
 /**
@@ -17,5 +19,6 @@ public abstract class Controller {
     
     public abstract boolean create(Model model);
     public abstract boolean update(Model model);
-    public abstract boolean delete();
+    public abstract boolean delete(int id);
+    public abstract Model getById(int id);
 }
