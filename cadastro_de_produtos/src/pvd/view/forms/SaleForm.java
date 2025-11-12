@@ -7,6 +7,7 @@ package pvd.view.forms;
 import javax.swing.table.DefaultTableModel;
 import pvd.controller.CustomerController;
 import pvd.controller.ProductController;
+import pvd.controller.SaleController;
 import pvd.model.Customer;
 import pvd.model.Product;
 import pvd.view.helpers.WindowHelper;
@@ -98,7 +99,6 @@ public class SaleForm extends javax.swing.JFrame {
 
     private boolean buy() {
         try {
-            // 1️⃣ Verifica se há produtos selecionados
             int[] selectedRows = productsTable.getSelectedRows();
             if (selectedRows.length == 0) {
                 javax.swing.JOptionPane.showMessageDialog(this,
@@ -106,8 +106,7 @@ public class SaleForm extends javax.swing.JFrame {
                         "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
                 return false;
             }
-
-            // 2️⃣ Obtém cliente selecionado (opcional)
+            
             Integer customerId = null;
             int selectedCustomerRow = customerTable.getSelectedRow();
             if (selectedCustomerRow != -1) {
@@ -118,7 +117,6 @@ public class SaleForm extends javax.swing.JFrame {
                 }
             }
 
-            // 3️⃣ Prepara dados da venda
             String paymentMethod = (String) paymentMethodComboBox.getSelectedItem();
             double totalSale = 0.0;
 
@@ -127,7 +125,6 @@ public class SaleForm extends javax.swing.JFrame {
             sale.setPaymentMethod(paymentMethod);
             sale.setSaleDateTime(new java.util.Date());
 
-            // 4️⃣ Percorre produtos selecionados
             ProductController productController = new ProductController();
             java.util.List<Product> allProducts = productController.getAll();
 
@@ -136,7 +133,6 @@ public class SaleForm extends javax.swing.JFrame {
             for (int row : selectedRows) {
                 Product product = allProducts.get(row);
 
-                // Lê quantidade informada na tabela
                 Object quantityObj = productsTable.getValueAt(row, 5);
                 if (quantityObj == null || quantityObj.toString().isBlank()) {
                     javax.swing.JOptionPane.showMessageDialog(this,
@@ -175,43 +171,41 @@ public class SaleForm extends javax.swing.JFrame {
 
             sale.setTotal(totalSale);
 
-            // 5️⃣ Grava a venda
-            pvd.controller.SaleController saleController = new pvd.controller.SaleController();
-            boolean saleCreated = saleController.create(sale);
-            if (!saleCreated) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                        "Erro ao registrar a venda.", "Erro", javax.swing.JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
+            pvd.controller.SaleController saleController = new SaleController();
+            int saleId = saleController.createAndReturnId(sale);
 
-            int saleId = saleController.getLastInsertedId();
             if (saleId <= 0) {
                 javax.swing.JOptionPane.showMessageDialog(this,
-                        "Erro ao obter o ID da venda recém-criada.",
+                        "Erro ao registrar a venda. ID retornado inválido.",
                         "Erro", javax.swing.JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 
-            // 6️⃣ Grava os itens da venda
             pvd.controller.SaleItemController saleItemController = new pvd.controller.SaleItemController();
 
             for (pvd.model.SaleItem item : saleItems) {
                 item.setSaleId(saleId);
                 saleItemController.create(item);
 
-                // Atualiza o estoque do produto
                 Product product = productController.getById(item.getProductId());
                 product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
                 productController.update(product);
+                productController.updateLastSaleDateTime(product.getId(), new java.util.Date());
             }
-
-            // 7️⃣ Atualiza o total na interface
+            
             totalPriceText.setText(String.format("%.2f", totalSale));
 
             javax.swing.JOptionPane.showMessageDialog(this,
                     "Venda realizada com sucesso! Total: R$ " + String.format("%.2f", totalSale),
                     "Sucesso", javax.swing.JOptionPane.INFORMATION_MESSAGE);
 
+            int printOption = javax.swing.JOptionPane.showConfirmDialog(this,
+                    "Deseja imprimir a notinha?", "Imprimir", javax.swing.JOptionPane.YES_NO_OPTION);
+
+            if (printOption == javax.swing.JOptionPane.YES_OPTION) {
+                this.print();
+            }
+            this.listProductData();
             return true;
 
         } catch (Exception e) {
@@ -220,6 +214,41 @@ public class SaleForm extends javax.swing.JFrame {
                     "Erro ao realizar a compra: " + e.getMessage(),
                     "Erro", javax.swing.JOptionPane.ERROR_MESSAGE);
             return false;
+        }
+    }
+
+    private void print() {
+        try {
+            java.awt.print.PrinterJob job = java.awt.print.PrinterJob.getPrinterJob();
+            job.setJobName("Imprimir janela atual");
+
+            job.setPrintable((graphics, pageFormat, pageIndex) -> {
+                if (pageIndex > 0) {
+                    return java.awt.print.Printable.NO_SUCH_PAGE;
+                }
+                
+                java.awt.Graphics2D g2 = (java.awt.Graphics2D) graphics;
+                g2.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+                double scaleX = pageFormat.getImageableWidth() / this.getWidth();
+                double scaleY = pageFormat.getImageableHeight() / this.getHeight();
+                double scale = Math.min(scaleX, scaleY);
+                g2.scale(scale, scale);
+                
+                this.printAll(g2);
+
+                return java.awt.print.Printable.PAGE_EXISTS;
+            });
+
+            if (job.printDialog()) {
+                job.print();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Erro ao imprimir: " + e.getMessage(),
+                    "Erro de impressão",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -286,6 +315,11 @@ public class SaleForm extends javax.swing.JFrame {
         totalPriceText.setText("0");
 
         confirmButton.setText("Confirmar compra");
+        confirmButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -346,6 +380,10 @@ public class SaleForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
+        this.buy();
+    }//GEN-LAST:event_confirmButtonActionPerformed
 
     /**
      * @param args the command line arguments

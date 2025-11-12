@@ -30,12 +30,12 @@ public class ProductList extends List {
         boolean deleted = productController.delete(id);
         return deleted;
     }
-    
+
     @Override
     protected void openCreateForm() {
         new ProductForm(this).setVisible(true);
     }
-    
+
     @Override
     protected void openUpdateForm(int itemToUpdateId) {
         new ProductForm(this, itemToUpdateId).setVisible(true);
@@ -63,15 +63,15 @@ public class ProductList extends List {
 
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
-            
+
             rows[i][0] = String.valueOf(product.getId());
             rows[i][1] = product.getName();
             rows[i][2] = (product.getCode() != null) ? product.getCode() : "-";
             rows[i][3] = product.getUnit();
             rows[i][4] = String.format("%.2f", product.getPrice());
             rows[i][5] = String.format("%.2f", product.getStockQuantity());
-            rows[i][6] = (product.getLastSaleDate() != null)
-                    ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(product.getLastSaleDate())
+            rows[i][6] = (product.getLastSaleDateTime() != null)
+                    ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(product.getLastSaleDateTime())
                     : "-";
         }
 

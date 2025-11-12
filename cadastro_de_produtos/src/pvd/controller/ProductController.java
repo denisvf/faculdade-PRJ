@@ -23,6 +23,28 @@ public class ProductController extends Controller<Product> {
         this.tableName = "products";
     }
 
+    public boolean updateLastSaleDateTime(int productId, java.util.Date date) {
+        String sql = "UPDATE products SET last_sale_date_time = ? WHERE _id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
+            stmt.setInt(2, productId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(
+                    null,
+                    "Erro ao atualizar a data da última venda: " + e.getMessage(),
+                    "Erro de Banco de Dados",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return false;
+        }
+    }
+
     @Override
     protected Product mapResultSetToModel(ResultSet rs) throws SQLException {
         Product product = new Product();
@@ -34,7 +56,7 @@ public class ProductController extends Controller<Product> {
         product.setPrice(rs.getDouble("price"));
         product.setStockQuantity(rs.getDouble("stock_quantity"));
 
-        Timestamp lastSaleDate = rs.getTimestamp("last_sale_date");
+        Timestamp lastSaleDate = rs.getTimestamp("last_sale_date_time");
         if (lastSaleDate != null) {
             product.setLastSaleDate(new Date(lastSaleDate.getTime()));
         }

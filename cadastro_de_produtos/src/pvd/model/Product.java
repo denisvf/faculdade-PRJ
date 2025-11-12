@@ -17,7 +17,7 @@ public class Product extends Model {
     private String unit;
     private double price;
     private double stockQuantity;
-    private Date lastSaleDate;
+    private Date lastSaleDateTime;
 
     public String getName() {
         return this.name;
@@ -39,8 +39,8 @@ public class Product extends Model {
         return this.stockQuantity;
     }
 
-    public Date getLastSaleDate() {
-        return this.lastSaleDate;
+    public Date getLastSaleDateTime() {
+        return this.lastSaleDateTime;
     }
 
     public void setCode(String code) {
@@ -56,7 +56,7 @@ public class Product extends Model {
     }
 
     public void setLastSaleDate(Date date) {
-        this.lastSaleDate = date;
+        this.lastSaleDateTime = date;
     }
 
     public void setPrice(double price) {
