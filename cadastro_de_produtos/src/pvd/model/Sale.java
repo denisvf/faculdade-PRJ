@@ -11,23 +11,32 @@ import java.util.Date;
  */
 public class Sale extends Model {
     private Date saleDateTime;
-    private double totalValue;
+    private double total;
     private Integer customerId;
+    private String paymentMethod;
 
     public Date getSaleDateTime() {
         return saleDateTime;
     }
-
+    
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+    
     public void setSaleDateTime(Date saleDateTime) {
         this.saleDateTime = saleDateTime;
     }
-
-    public double getTotalValue() {
-        return totalValue;
+    
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
-    public void setTotalValue(double totalValue) {
-        this.totalValue = totalValue;
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 
     public Integer getCustomerId() {

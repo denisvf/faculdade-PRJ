@@ -4,6 +4,7 @@
  */
 package pvd.view.pages;
 
+import pvd.view.forms.SaleForm;
 import pvd.view.helpers.WindowHelper;
 import pvd.view.lists.CustomerList;
 import pvd.view.lists.ProductList;
@@ -36,7 +37,10 @@ public class HomePage extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         registersMenu = new javax.swing.JMenu();
         productsMenuItem = new javax.swing.JMenuItem();
-        customersMenuItem = new javax.swing.JCheckBoxMenuItem();
+        customerMenuItem = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        buyMenuItem = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pagina inicial");
@@ -51,16 +55,30 @@ public class HomePage extends javax.swing.JFrame {
         });
         registersMenu.add(productsMenuItem);
 
-        customersMenuItem.setSelected(true);
-        customersMenuItem.setText("Clientes");
-        customersMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        customerMenuItem.setText("Clientes");
+        customerMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customersMenuItemActionPerformed(evt);
+                customerMenuItemActionPerformed(evt);
             }
         });
-        registersMenu.add(customersMenuItem);
+        registersMenu.add(customerMenuItem);
 
         jMenuBar1.add(registersMenu);
+
+        jMenu1.setText("Compras");
+
+        buyMenuItem.setText("Comprar");
+        buyMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buyMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(buyMenuItem);
+
+        jMenuItem2.setText("Relatório");
+        jMenu1.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
@@ -82,9 +100,13 @@ public class HomePage extends javax.swing.JFrame {
        new ProductList().setVisible(true);
     }//GEN-LAST:event_productsMenuItemActionPerformed
 
-    private void customersMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersMenuItemActionPerformed
+    private void customerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerMenuItemActionPerformed
        new CustomerList().setVisible(true);
-    }//GEN-LAST:event_customersMenuItemActionPerformed
+    }//GEN-LAST:event_customerMenuItemActionPerformed
+
+    private void buyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buyMenuItemActionPerformed
+        new SaleForm().setVisible(true);
+    }//GEN-LAST:event_buyMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -112,8 +134,11 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBoxMenuItem customersMenuItem;
+    private javax.swing.JMenuItem buyMenuItem;
+    private javax.swing.JMenuItem customerMenuItem;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem productsMenuItem;
     private javax.swing.JMenu registersMenu;
     // End of variables declaration//GEN-END:variables
