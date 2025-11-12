@@ -12,19 +12,19 @@ import java.util.Date;
  */
 public class Product extends Model {
 
-    private int _id;
+    private String code;
     private String name;
     private String unit;
     private double price;
     private double stockQuantity;
     private Date lastSaleDate;
 
-    public int getId() {
-        return this._id;
-    }
-
     public String getName() {
         return this.name;
+    }
+    
+    public String getCode() {
+        return this.code;
     }
 
     public String getUnit() {
@@ -43,8 +43,8 @@ public class Product extends Model {
         return this.lastSaleDate;
     }
 
-    public void setId(int id) {
-        this._id = id;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public void setName(String name) {

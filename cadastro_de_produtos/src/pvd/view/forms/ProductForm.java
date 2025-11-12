@@ -38,17 +38,16 @@ public class ProductForm extends Form {
         Product product = new Product();
 
         String name = getNameTextInput().getText().trim();
+        String code = getCodeTextInput().getText().trim();
         String unit = getUnitComboBoxInput().getSelectedItem().toString();
         double price = Double.parseDouble(getPriceTextInput().getText().trim());
         double stockQuantity = Double.parseDouble(getStockQuantityTextInput().getText().trim());
 
         product.setName(name);
+        product.setCode(code);
         product.setUnit(unit);
         product.setPrice(price);
         product.setStockQuantity(stockQuantity);
-
-        // TODO: Define "lastSaleDateTime" when the sales table be doned
-        // product.setLastSaleDateTime(null);
         return product;
     }
     
@@ -107,6 +106,7 @@ public class ProductForm extends Form {
 
             if (product != null) {
                 getNameTextInput().setText(product.getName());
+                getCodeTextInput().setText(product.getCode());
                 getPriceTextInput().setText(String.valueOf(product.getPrice()));
                 getStockQuantityTextInput().setText(String.valueOf(product.getStockQuantity()));
                 getUnitComboBoxInput().setSelectedItem(product.getUnit());
@@ -126,6 +126,10 @@ public class ProductForm extends Form {
 
     public javax.swing.JTextField getNameTextInput() {
         return nameTextInput;
+    }
+    
+    public javax.swing.JTextField getCodeTextInput() {
+        return codeTextInput;
     }
 
     public javax.swing.JTextField getPriceTextInput() {
@@ -157,6 +161,8 @@ public class ProductForm extends Form {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        codeTextInput = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
 
         setTitle("Produto");
 
@@ -182,6 +188,14 @@ public class ProductForm extends Form {
 
         jLabel4.setText("Nome");
 
+        codeTextInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                codeTextInputActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Código");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -201,11 +215,13 @@ public class ProductForm extends Form {
                             .addContainerGap()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(unitComboBoxInput, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(unitComboBoxInput, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(codeTextInput, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(nameTextInput, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(107, Short.MAX_VALUE))
+                .addContainerGap(122, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,11 +238,15 @@ public class ProductForm extends Form {
                 .addComponent(jLabel1)
                 .addGap(2, 2, 2)
                 .addComponent(priceTextInput, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addGap(8, 8, 8)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(codeTextInput, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(unitComboBoxInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(152, Short.MAX_VALUE))
+                .addContainerGap(204, Short.MAX_VALUE))
         );
 
         pack();
@@ -240,15 +260,21 @@ public class ProductForm extends Form {
         // TODO add your handling code here:
     }//GEN-LAST:event_nameTextInputActionPerformed
 
+    private void codeTextInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codeTextInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_codeTextInputActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField codeTextInput;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField nameTextInput;
     private javax.swing.JTextField priceTextInput;
     private javax.swing.JTextField stockQuantityTextInput;

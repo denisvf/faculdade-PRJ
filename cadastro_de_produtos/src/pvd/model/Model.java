@@ -9,6 +9,17 @@ package pvd.model;
  * @author denis
  */
 public class Model {
+
+    public int _id;
+
     public Model() {
-    }    
+    }
+
+    public int getId() {
+        return this._id;
+    }
+    
+    public void setId(int id) {
+        this._id = id;
+    }
 }

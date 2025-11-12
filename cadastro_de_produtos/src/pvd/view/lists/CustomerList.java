@@ -4,41 +4,43 @@
  */
 package pvd.view.lists;
 
-import pvd.controller.ProductController;
-import pvd.model.Product;
-import pvd.view.forms.ProductForm;
+import pvd.controller.AddressController;
+import pvd.controller.CustomerController;
+import pvd.model.Address;
+import pvd.model.Customer;
+import pvd.view.forms.CustomerForm;
 
 /**
  *
  * @author denis
  */
-public class ProductList extends List {
+public class CustomerList extends List {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ProductList.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CustomerList.class.getName());
 
     /**
-     * Creates new form ProductList
+     * Creates new form CostumerList
      */
-    public ProductList() {
+    public CustomerList() {
         super();
         initComponents();
     }
 
     @Override
     public boolean delete(int id) {
-        ProductController productController = new ProductController();
-        boolean deleted = productController.delete(id);
+        CustomerController controller = new CustomerController();
+        boolean deleted = controller.delete(id);
         return deleted;
     }
-    
+
     @Override
     protected void openCreateForm() {
-        new ProductForm(this).setVisible(true);
+        new CustomerForm(this).setVisible(true);
     }
-    
+
     @Override
     protected void openUpdateForm(int itemToUpdateId) {
-        new ProductForm(this, itemToUpdateId).setVisible(true);
+        new CustomerForm(this, itemToUpdateId).setVisible(true);
     }
 
     @Override
@@ -47,36 +49,53 @@ public class ProductList extends List {
             "ID",
             "Nome",
             "Código",
-            "Unidade",
-            "Preço",
-            "Quantidade em estoque",
-            "Data da última venda"
+            "Telefone",
+            "Email",
+            "Estado",
+            "Cidade",
+            "Cep",
+            "Rua",
+            "Número",
+            "Complemento",
         };
     }
 
-    @Override
-    protected String[][] getRows() {
-        ProductController controller = new ProductController();
-        java.util.List<Product> products = controller.getAll();
 
-        String[][] rows = new String[products.size()][getColumns().length];
+@Override
+protected String[][] getRows() {
+    CustomerController customerController = new CustomerController();
+    AddressController addressController = new AddressController();
+    
+    java.util.List<Customer> customers = customerController.getAll();
 
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-            
-            rows[i][0] = String.valueOf(product.getId());
-            rows[i][1] = product.getName();
-            rows[i][2] = (product.getCode() != null) ? product.getCode() : "-";
-            rows[i][3] = product.getUnit();
-            rows[i][4] = String.format("%.2f", product.getPrice());
-            rows[i][5] = String.format("%.2f", product.getStockQuantity());
-            rows[i][6] = (product.getLastSaleDate() != null)
-                    ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(product.getLastSaleDate())
-                    : "-";
+    String[][] rows = new String[customers.size()][getColumns().length];
+
+    for (int i = 0; i < customers.size(); i++) {
+        Customer customer = customers.get(i);
+        Address address = addressController.getById(customer.getAddressId());
+
+        rows[i][0] = String.valueOf(customer.getId());
+        rows[i][1] = customer.getName();
+        rows[i][2] = (customer.getCode() != null) ? customer.getCode() : "-";
+        rows[i][3] = (customer.getPhoneNumber() != null) ? customer.getPhoneNumber() : "-";
+        rows[i][4] = (customer.getEmail() != null) ? customer.getEmail() : "-";
+        
+        if (address != null) {
+            rows[i][5] = (address.getState() != null) ? address.getState() : "-";
+            rows[i][6] = (address.getCity() != null) ? address.getCity() : "-";
+            rows[i][7] = (address.getZipCode() != null) ? address.getZipCode() : "-";
+            rows[i][8] = (address.getStreet() != null) ? address.getStreet() : "-";
+            rows[i][9] = String.valueOf(address.getNumber());
+            rows[i][10] = (address.getComplement() != null) ? address.getComplement() : "-";
+        } else {
+            for (int j = 5; j < getColumns().length; j++) {
+                rows[i][j] = "-";
+            }
         }
-
-        return rows;
     }
+
+    return rows;
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -88,7 +107,6 @@ public class ProductList extends List {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Lista de produtos");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -126,7 +144,7 @@ public class ProductList extends List {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new ProductList().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new CustomerList().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

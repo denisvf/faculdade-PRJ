@@ -5,6 +5,7 @@
 package pvd.view.pages;
 
 import pvd.view.helpers.WindowHelper;
+import pvd.view.lists.CustomerList;
 import pvd.view.lists.ProductList;
 
 /**
@@ -35,6 +36,7 @@ public class HomePage extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         registersMenu = new javax.swing.JMenu();
         productsMenuItem = new javax.swing.JMenuItem();
+        customersMenuItem = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pagina inicial");
@@ -48,6 +50,15 @@ public class HomePage extends javax.swing.JFrame {
             }
         });
         registersMenu.add(productsMenuItem);
+
+        customersMenuItem.setSelected(true);
+        customersMenuItem.setText("Clientes");
+        customersMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customersMenuItemActionPerformed(evt);
+            }
+        });
+        registersMenu.add(customersMenuItem);
 
         jMenuBar1.add(registersMenu);
 
@@ -70,6 +81,10 @@ public class HomePage extends javax.swing.JFrame {
     private void productsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productsMenuItemActionPerformed
        new ProductList().setVisible(true);
     }//GEN-LAST:event_productsMenuItemActionPerformed
+
+    private void customersMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersMenuItemActionPerformed
+       new CustomerList().setVisible(true);
+    }//GEN-LAST:event_customersMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -97,6 +112,7 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBoxMenuItem customersMenuItem;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem productsMenuItem;
     private javax.swing.JMenu registersMenu;
