@@ -5,7 +5,9 @@
 package pvd.view.lists;
 
 import javax.swing.table.DefaultTableModel;
+import pvd.controller.CustomerController;
 import pvd.controller.SaleController;
+import pvd.model.Customer;
 import pvd.model.Sale;
 import pvd.view.helpers.WindowHelper;
 
@@ -46,8 +48,10 @@ public class SalesList extends javax.swing.JFrame {
     private String[] getSalesColumns() {
         return new String[]{
             "ID",
+            "Código do Cliente",
             "Forma de pagamento",
-            "Valor total",};
+            "Valor total"
+        };
     }
 
     private String[] getTotalPerPaymentMethodColumns() {
@@ -58,16 +62,33 @@ public class SalesList extends javax.swing.JFrame {
 
     private String[][] getSalesRows() {
         SaleController controller = new SaleController();
-        java.util.List<Sale> sales = controller.getAll();
+        CustomerController customerController = new CustomerController();
 
+        java.util.List<Sale> sales = controller.getAll();
         String[][] rows = new String[sales.size()][getSalesColumns().length];
 
         for (int i = 0; i < sales.size(); i++) {
             Sale sale = sales.get(i);
 
             rows[i][0] = String.valueOf(sale.getId());
-            rows[i][1] = sale.getPaymentMethod();
-            rows[i][2] = String.format("%.2f", sale.getTotal());
+
+            // Busca o cliente usando o controller
+            String customerCode = "-";
+            try {
+                if (sale.getCustomerId() != null) {
+                    Customer customer = customerController.getById(sale.getCustomerId());
+                    if (customer != null && customer.getCode() != null) {
+                        customerCode = customer.getCode();
+                    }
+                }
+            } catch (Exception e) {
+                customerCode = "Erro";
+                e.printStackTrace();
+            }
+
+            rows[i][1] = customerCode;
+            rows[i][2] = sale.getPaymentMethod();
+            rows[i][3] = String.format("%.2f", sale.getTotal());
         }
 
         return rows;
@@ -196,15 +217,15 @@ public class SalesList extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(42, 42, 42)
+                .addGap(55, 55, 55)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(62, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(55, 55, 55))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(printButton, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -216,14 +237,14 @@ public class SalesList extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(printButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27))
         );

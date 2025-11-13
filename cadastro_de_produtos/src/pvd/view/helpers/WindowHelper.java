@@ -19,8 +19,8 @@ public class WindowHelper {
         Dimension d = tool.getScreenSize();
 
         int x = (d.width - window.getWidth()) / 2;
-        int h = (d.height - window.getWidth()) / 2;
+        int y = (d.height - window.getHeight()) / 2;
 
-        window.setLocation(x, h);
+        window.setLocation(x, y);
     }
 }
